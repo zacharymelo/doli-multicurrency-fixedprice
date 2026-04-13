@@ -207,47 +207,7 @@ class ActionsFixedprice
 		$_POST['multicurrency_price_ht'] = (string) $fixed_price;
 		$_POST['price_ht'] = '';
 
-		// Divergence warning — all inline, no includes
-		if (getDolGlobalString('FIXEDPRICE_WARN_ON_APPLY')) {
-			$langs->load('fixedprice@fixedprice');
-
-			$sql2 = "SELECT p.ref, p.price FROM ".MAIN_DB_PREFIX."product p WHERE p.rowid = ".((int) $idprod);
-			$resql2 = $this->db->query($sql2);
-			if ($resql2 && $this->db->num_rows($resql2) > 0) {
-				$prodobj = $this->db->fetch_object($resql2);
-
-				$sql3 = "SELECT rate FROM ".MAIN_DB_PREFIX."multicurrency_rate mcr";
-				$sql3 .= " JOIN ".MAIN_DB_PREFIX."multicurrency mc ON mc.rowid = mcr.fk_multicurrency";
-				$sql3 .= " WHERE mc.code = '".$this->db->escape($object->multicurrency_code)."'";
-				$sql3 .= " AND mc.entity = ".((int) $conf->entity);
-				$sql3 .= " ORDER BY mcr.date_sync DESC LIMIT 1";
-				$resql3 = $this->db->query($sql3);
-				$rate = 1;
-				if ($resql3 && $this->db->num_rows($resql3) > 0) {
-					$rateobj = $this->db->fetch_object($resql3);
-					$rate = (float) $rateobj->rate;
-				}
-
-				$auto_price = (float) $prodobj->price * $rate;
-				$divergence = ($auto_price > 0) ? abs(($fixed_price - $auto_price) / $auto_price) * 100 : 0;
-
-				$msg = $langs->trans(
-					"FixedPriceApplied",
-					$prodobj->ref,
-					$object->multicurrency_code,
-					price($fixed_price, 0, $langs, 1, -1, -1, $object->multicurrency_code),
-					price2num($divergence, 1),
-					price($auto_price, 0, $langs, 1, -1, -1, $object->multicurrency_code)
-				);
-
-				$threshold = (float) getDolGlobalString('FIXEDPRICE_DIVERGENCE_THRESHOLD', '10');
-				if ($divergence > $threshold) {
-					setEventMessages($msg, null, 'warnings');
-				} else {
-					setEventMessages($msg, null, 'mesgs');
-				}
-			}
-		}
+		dol_syslog('fixedprice: injected fixed price '.$fixed_price.' '.$object->multicurrency_code.' for product '.$idprod, LOG_INFO);
 	}
 
 	/**
