@@ -76,11 +76,7 @@ class ActionsFixedprice
 			|| in_array('ordercard', $currentcontext)
 			|| in_array('propalcard', $currentcontext)
 		) {
-			try {
-				$this->_doActionsAddline($object, $action);
-			} catch (Exception $e) {
-				dol_syslog('fixedprice::doActions addline error: '.$e->getMessage(), LOG_ERR);
-			}
+			$this->_doActionsAddline($object, $action);
 		}
 
 		return 0;
@@ -184,7 +180,6 @@ class ActionsFixedprice
 			return;
 		}
 
-		// Safety: ensure object has multicurrency_code property
 		if (!is_object($object) || !property_exists($object, 'multicurrency_code')) {
 			return;
 		}
@@ -200,10 +195,12 @@ class ActionsFixedprice
 		}
 
 		// Don't override if user manually entered a multicurrency price
-		if (GETPOST('multicurrency_price_ht') !== '' && GETPOST('multicurrency_price_ht') !== null) {
+		$multicurrency_post = GETPOST('multicurrency_price_ht', 'alpha');
+		if ($multicurrency_post !== '' && $multicurrency_post !== null && $multicurrency_post !== false) {
 			return;
 		}
 
+		// Look up fixed price for this product + currency
 		dol_include_once('/fixedprice/lib/fixedprice.lib.php');
 
 		$fixed = fixedpriceFetchEnabled($this->db, $idprod, $object->multicurrency_code);
@@ -217,7 +214,6 @@ class ActionsFixedprice
 		$_POST['multicurrency_price_ht'] = (string) $fixed_price;
 
 		// Clear base currency price so Dolibarr's priority logic picks up the multicurrency price
-		// (see facture/card.php:2376-2393 — price_ht takes priority over multicurrency_price_ht)
 		$_POST['price_ht'] = '';
 
 		// Fire divergence warning if enabled
@@ -228,7 +224,6 @@ class ActionsFixedprice
 			$divergence = fixedpriceCalcDivergence($fixed_price, $auto_price);
 			$threshold = fixedpriceResolveThreshold($this->db, $idprod, $object->multicurrency_code);
 
-			// Get product ref for the message
 			require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 			$prod = new Product($this->db);
 			$prod->fetch($idprod);
