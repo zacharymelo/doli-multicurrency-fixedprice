@@ -22,7 +22,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8080:80"
+      - "8085:80"
     environment:
       DOLI_DB_HOST: db
       DOLI_DB_NAME: dolibarr
@@ -30,7 +30,7 @@ services:
       DOLI_DB_PASSWORD: dolibarr
       DOLI_ADMIN_LOGIN: admin
       DOLI_ADMIN_PASSWORD: admin
-      DOLI_URL_ROOT: "http://localhost:8080"
+      DOLI_URL_ROOT: "http://localhost:8085"
       WWW_USER_ID: 1000
       WWW_GROUP_ID: 1000
     volumes:

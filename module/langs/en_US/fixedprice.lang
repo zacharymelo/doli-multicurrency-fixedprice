@@ -32,8 +32,8 @@ InheritedFromParent = inherited from parent
 InheritedFromGlobal = global default
 
 # Document line warnings
-FixedPriceApplied = Product %s: Fixed %s price %s applied (%s%% divergence from auto-converted %s)
-FixedPriceDivergenceWarning = Product %s: Fixed %s price diverges %s%% from auto-converted price (threshold: %s%%)
+FixedPriceApplied = %s: Fixed %s price %s applied (%s%% divergence)
+FixedPriceDivergenceWarning = %s: Fixed %s price diverges %s%% (threshold: %s%%)
 
 # List page
 FixedPriceList = Fixed Prices
