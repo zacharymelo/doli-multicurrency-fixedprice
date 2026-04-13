@@ -258,11 +258,6 @@ class ActionsFixedprice
 
 				if ($divergence > $threshold) {
 					setEventMessages($msg, null, 'errors');
-					// Flag the product ref for row highlighting during page render
-					if (!isset($_SESSION['fixedprice_warn_refs'])) {
-						$_SESSION['fixedprice_warn_refs'] = array();
-					}
-					$_SESSION['fixedprice_warn_refs'][] = $prodobj->ref;
 				} else {
 					setEventMessages($msg, null, 'mesgs');
 				}
@@ -293,16 +288,6 @@ class ActionsFixedprice
 
 		$currentcontext = explode(':', $parameters['context']);
 
-		// --- Document pages: inject row highlight JS for divergence warnings ---
-		if (in_array('propalcard', $currentcontext)
-			|| in_array('ordercard', $currentcontext)
-			|| in_array('invoicecard', $currentcontext)
-		) {
-			$this->_renderDivergenceHighlight();
-			return 0;
-		}
-
-		// --- Product price page: fixed prices section ---
 		if (!in_array('productpricecard', $currentcontext)) {
 			return 0;
 		}
@@ -320,46 +305,6 @@ class ActionsFixedprice
 		print '<div class="tabsAction">';
 
 		return 0;
-	}
-
-	/**
-	 * Inject JavaScript to highlight document line rows for products with divergence warnings.
-	 *
-	 * Reads product refs from $_SESSION['fixedprice_warn_refs'] (set during addline),
-	 * outputs a script that finds matching rows in the line table and highlights them.
-	 *
-	 * @return void
-	 */
-	private function _renderDivergenceHighlight()
-	{
-		if (empty($_SESSION['fixedprice_warn_refs'])) {
-			return;
-		}
-
-		$refs = $_SESSION['fixedprice_warn_refs'];
-		unset($_SESSION['fixedprice_warn_refs']);
-
-		$js_refs = array();
-		foreach ($refs as $ref) {
-			$js_refs[] = "'".dol_escape_js($ref)."'";
-		}
-
-		print "\n".'<!-- fixedprice divergence row highlight -->'."\n";
-		print '<script>'."\n";
-		print 'jQuery(document).ready(function() {'."\n";
-		print '  var warnRefs = ['.implode(',', $js_refs).'];'."\n";
-		print '  jQuery("#tablelines tr.drag td a, #tablelines tr td a").each(function() {'."\n";
-		print '    var href = jQuery(this).attr("href") || "";'."\n";
-		print '    var text = jQuery.trim(jQuery(this).text());'."\n";
-		print '    for (var i = 0; i < warnRefs.length; i++) {'."\n";
-		print '      if (text === warnRefs[i]) {'."\n";
-		print '        jQuery(this).closest("tr").css({"background-color": "#fff3cd", "border-left": "4px solid #ffc107"});'."\n";
-		print '        break;'."\n";
-		print '      }'."\n";
-		print '    }'."\n";
-		print '  });'."\n";
-		print '});'."\n";
-		print '</script>'."\n";
 	}
 
 	/**
