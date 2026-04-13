@@ -38,7 +38,16 @@ FixedPriceDivergenceWarning = Product %s: Fixed %s price diverges %s%% from auto
 # List page
 FixedPriceList = Fixed Prices
 BasePrice = Base Price
+BasePriceHelp = The product's selling price in your base currency. Fixed prices in other currencies override the auto-converted amount.
+CurrencyRateHelp = Current exchange rate for %s: %s. Auto-converted prices use this rate.
+FixedPriceHTHelp = The fixed selling price in this currency. When set and enabled, this overrides the auto-converted price on proposals, orders, and invoices.
+AutoConvertedPriceHelp = What the price would be using automatic exchange rate conversion (base price x current rate). Compare with the fixed price to gauge divergence.
+DivergenceHelp = How far the fixed price has drifted from the auto-converted price. Threshold is %s%%. Red = over threshold.
+DivergenceTooltip = Divergence: %s%% (threshold: %s%%)
 ConfirmDeleteFixedPrice = Are you sure you want to delete this fixed price?
+EditFixedPricesForProduct = Edit fixed prices for this product
+ClickToDisable = Click to pause the %s fixed price override
+ClickToEnable = Click to enable the %s fixed price override
 Disable = Disable
 Enable = Enable
 

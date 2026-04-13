@@ -260,22 +260,23 @@ print '<table class="tagtable nobottomiftotal liste listwithfilterbefore centper
 print '<tr class="liste_titre">';
 print getTitleFieldOfList($langs->trans('ProductRef'), 0, $_SERVER['PHP_SELF'], 'p.ref', '', $param, '', $sortfield, $sortorder);
 print getTitleFieldOfList($langs->trans('Label'), 0, $_SERVER['PHP_SELF'], 'p.label', '', $param, '', $sortfield, $sortorder);
-print getTitleFieldOfList($langs->trans('BasePrice').' ('.$conf->currency.')', 0, $_SERVER['PHP_SELF'], 'p.price', '', $param, 'class="right"', $sortfield, $sortorder);
+print getTitleFieldOfList($form->textwithpicto($langs->trans('BasePrice').' ('.$conf->currency.')', $langs->trans('BasePriceHelp')), 0, $_SERVER['PHP_SELF'], 'p.price', '', $param, 'class="right"', $sortfield, $sortorder);
 
 foreach ($currencies as $code => $name) {
-	print '<td class="liste_titre center" colspan="3"><strong>'.$code.'</strong> ('.$name.')</td>';
+	$rate_display = isset($rates[$code]) ? price2num($rates[$code], 4) : '?';
+	print '<td class="liste_titre center" colspan="3">'.$form->textwithpicto('<strong>'.$code.'</strong> ('.$name.')', $langs->trans('CurrencyRateHelp', $code, $rate_display)).'</td>';
 }
 
-print '<td class="liste_titre center">'.$langs->trans('Action').'</td>';
+print '<td class="liste_titre center maxwidthsearch"></td>';
 print '</tr>';
 
 // --- Sub-header for currency columns ---
 print '<tr class="liste_titre">';
-print '<td></td><td></td><td></td>'; // product ref, label, base price
+print '<td></td><td></td><td></td>';
 foreach ($currencies as $code => $name) {
-	print '<td class="liste_titre right">'.$langs->trans('FixedPriceHT').'</td>';
-	print '<td class="liste_titre right">'.$langs->trans('AutoConvertedPrice').'</td>';
-	print '<td class="liste_titre center">%</td>';
+	print '<td class="liste_titre right">'.$form->textwithpicto($langs->trans('FixedPriceHT'), $langs->trans('FixedPriceHTHelp')).'</td>';
+	print '<td class="liste_titre right">'.$form->textwithpicto($langs->trans('AutoConvertedPrice'), $langs->trans('AutoConvertedPriceHelp')).'</td>';
+	print '<td class="liste_titre center">'.$form->textwithpicto('%', $langs->trans('DivergenceHelp', getDolGlobalString('FIXEDPRICE_DIVERGENCE_THRESHOLD', '10'))).'</td>';
 }
 print '<td></td>';
 print '</tr>';
@@ -375,45 +376,44 @@ while ($i < $num) {
 			$fp = isset($existing[$code]) ? $existing[$code] : null;
 			$auto_price = $base_price * $rates[$code];
 
-			// Fixed price
+			// Fixed price + toggle inline
 			if ($fp) {
 				$display_price = price($fp->fixed_price_ht, 0, $langs, 1, -1, -1, $code);
-				if (!$fp->enabled) {
-					$display_price = '<span class="opacitymedium" title="'.$langs->trans("Disabled").'">'.$display_price.' <em>('.$langs->trans("Disabled").')</em></span>';
+				print '<td class="right nowraponall">';
+				if ($permwrite) {
+					$toggle_title = dol_escape_htmltag($fp->enabled ? $langs->trans('ClickToDisable', $code) : $langs->trans('ClickToEnable', $code));
+					print '<a href="'.$_SERVER['PHP_SELF'].'?action=togglefixedprice&token='.newToken().'&lineid='.$fp->id.$param.'" title="'.$toggle_title.'">';
+					print img_picto('', $fp->enabled ? 'switch_on' : 'switch_off', 'class="valignmiddle" style="width:20px"');
+					print '</a> ';
 				}
-				print '<td class="right nowraponall">'.$display_price.'</td>';
+				if (!$fp->enabled) {
+					print '<span class="opacitymedium">'.$display_price.'</span>';
+				} else {
+					print $display_price;
+				}
+				print '</td>';
 			} else {
 				print '<td class="right opacitymedium">—</td>';
 			}
 
 			// Auto price
-			print '<td class="right nowraponall opacitymedium">'.price($auto_price, 0, $langs, 1, -1, -1, $code).'</td>';
+			print '<td class="right nowraponall opacitymedium" title="'.dol_escape_htmltag(price2num($base_price, 'MU').' x '.$rates[$code]).'">'.price($auto_price, 0, $langs, 1, -1, -1, $code).'</td>';
 
 			// Divergence
 			if ($fp && $fp->fixed_price_ht > 0) {
 				$divergence = ($auto_price > 0) ? abs(($fp->fixed_price_ht - $auto_price) / $auto_price) * 100 : 0;
 				$divclass = ($divergence > $threshold_default) ? 'fixedprice-divergence-red' : (($divergence > $threshold_default * 0.8) ? 'fixedprice-divergence-amber' : 'fixedprice-divergence-green');
-				print '<td class="center"><span class="'.$divclass.'">'.price2num($divergence, 1).'%</span></td>';
+				$div_title = dol_escape_htmltag($langs->trans('DivergenceTooltip', price2num($divergence, 1), price2num($threshold_default, 1)));
+				print '<td class="center" title="'.$div_title.'"><span class="'.$divclass.'">'.price2num($divergence, 1).'%</span></td>';
 			} else {
 				print '<td class="center opacitymedium">—</td>';
 			}
 		}
 
-		// Actions
+		// Actions — just edit pencil
 		print '<td class="center nowraponall">';
 		if ($permwrite) {
-			// Edit
-			print '<a class="editfielda" href="'.$_SERVER['PHP_SELF'].'?action=editfixedprice&token='.newToken().'&productid='.$product_id.$param.'">'.img_picto($langs->trans('Edit'), 'edit').'</a>';
-
-			// Toggle per currency
-			foreach ($currencies as $code => $name) {
-				$fp = isset($existing[$code]) ? $existing[$code] : null;
-				if ($fp) {
-					print ' <a href="'.$_SERVER['PHP_SELF'].'?action=togglefixedprice&token='.newToken().'&lineid='.$fp->id.$param.'" title="'.dol_escape_htmltag($code.': '.($fp->enabled ? $langs->trans('Disable') : $langs->trans('Enable'))).'">';
-					print img_picto($code, $fp->enabled ? 'switch_on' : 'switch_off', 'style="width:20px"');
-					print '</a>';
-				}
-			}
+			print '<a class="editfielda" href="'.$_SERVER['PHP_SELF'].'?action=editfixedprice&token='.newToken().'&productid='.$product_id.$param.'" title="'.dol_escape_htmltag($langs->trans('EditFixedPricesForProduct')).'">'.img_picto($langs->trans('Edit'), 'edit').'</a>';
 		}
 		print '</td>';
 	}
