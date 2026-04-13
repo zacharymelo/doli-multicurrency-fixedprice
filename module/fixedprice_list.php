@@ -260,22 +260,22 @@ print '<table class="tagtable nobottomiftotal liste listwithfilterbefore centper
 print '<tr class="liste_titre">';
 print getTitleFieldOfList($langs->trans('ProductRef'), 0, $_SERVER['PHP_SELF'], 'p.ref', '', $param, '', $sortfield, $sortorder);
 print getTitleFieldOfList($langs->trans('Label'), 0, $_SERVER['PHP_SELF'], 'p.label', '', $param, '', $sortfield, $sortorder);
-print getTitleFieldOfList($form->textwithpicto($langs->trans('BasePrice').' ('.$conf->currency.')', $langs->trans('BasePriceHelp')), 0, $_SERVER['PHP_SELF'], 'p.price', '', $param, 'class="right"', $sortfield, $sortorder);
+print getTitleFieldOfList($langs->trans('BasePrice').' ('.$conf->currency.')', 0, $_SERVER['PHP_SELF'], 'p.price', '', $param, 'class="right nowraponall"', $sortfield, $sortorder);
 
 foreach ($currencies as $code => $name) {
 	$rate_display = isset($rates[$code]) ? price2num($rates[$code], 4) : '?';
-	print '<td class="liste_titre center" colspan="3">'.$form->textwithpicto('<strong>'.$code.'</strong> ('.$name.')', $langs->trans('CurrencyRateHelp', $code, $rate_display)).'</td>';
+	print '<td class="liste_titre center nowraponall" colspan="3">'.$form->textwithpicto('<strong>'.$code.'</strong>', $langs->trans('CurrencyRateHelp', $code, $rate_display)).'</td>';
 }
 
-print '<td class="liste_titre center maxwidthsearch"></td>';
+print '<td class="liste_titre"></td>';
 print '</tr>';
 
 // --- Sub-header for currency columns ---
 print '<tr class="liste_titre">';
 print '<td></td><td></td><td></td>';
 foreach ($currencies as $code => $name) {
-	print '<td class="liste_titre right">'.$form->textwithpicto($langs->trans('FixedPriceHT'), $langs->trans('FixedPriceHTHelp')).'</td>';
-	print '<td class="liste_titre right">'.$form->textwithpicto($langs->trans('AutoConvertedPrice'), $langs->trans('AutoConvertedPriceHelp')).'</td>';
+	print '<td class="liste_titre right nowraponall">'.$form->textwithpicto($langs->trans('Fixed'), $langs->trans('FixedPriceHTHelp')).'</td>';
+	print '<td class="liste_titre right nowraponall">'.$form->textwithpicto($langs->trans('Auto'), $langs->trans('AutoConvertedPriceHelp')).'</td>';
 	print '<td class="liste_titre center">'.$form->textwithpicto('%', $langs->trans('DivergenceHelp', getDolGlobalString('FIXEDPRICE_DIVERGENCE_THRESHOLD', '10'))).'</td>';
 }
 print '<td></td>';
@@ -291,9 +291,9 @@ foreach ($currencies as $code => $name) {
 	print '<td class="liste_titre"></td>';
 	print '<td class="liste_titre"></td>';
 }
-print '<td class="liste_titre center">';
-print '<input type="image" name="button_search" src="'.img_picto('', 'search.png', '', 0, 1).'" value="1" title="'.$langs->trans('Search').'">';
-print ' <input type="image" name="button_removefilter" src="'.img_picto('', 'searchclear.png', '', 0, 1).'" value="1" title="'.$langs->trans('RemoveFilter').'">';
+print '<td class="liste_titre center nowraponall">';
+print '<button type="submit" name="button_search" class="liste_titre button_search reposition" title="'.$langs->trans('Search').'">'.img_picto($langs->trans('Search'), 'search.png', '', 0, 1).'</button>';
+print '<button type="submit" name="button_removefilter" class="liste_titre button_removefilter reposition" title="'.$langs->trans('RemoveFilter').'">'.img_picto($langs->trans('RemoveFilter'), 'searchclear.png', '', 0, 1).'</button>';
 print '</td>';
 print '</tr>';
 
