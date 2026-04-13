@@ -35,6 +35,13 @@ InheritedFromGlobal = global default
 FixedPriceApplied = Product %s: Fixed %s price %s applied (%s%% divergence from auto-converted %s)
 FixedPriceDivergenceWarning = Product %s: Fixed %s price diverges %s%% from auto-converted price (threshold: %s%%)
 
+# List page
+FixedPriceList = Fixed Prices
+BasePrice = Base Price
+ConfirmDeleteFixedPrice = Are you sure you want to delete this fixed price?
+Disable = Disable
+Enable = Enable
+
 # Dashboard widget
 BoxFixedpriceDivergence = Fixed Price Divergence Alerts
 BoxFixedpriceDivergenceDesc = Products whose fixed multicurrency prices have diverged beyond their threshold
