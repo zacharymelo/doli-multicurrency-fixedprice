@@ -302,7 +302,6 @@ class ActionsFixedprice
 		$out = '';
 		$out .= "\n".'<!-- Fixed Multicurrency Prices section -->'."\n";
 		$out .= '<div class="fichecenter">'."\n";
-		$out .= '<div class="fichehalfleft">'."\n";
 
 		$out .= '<style>';
 		$out .= '.fixedprice-divergence-green { color: #28a745; font-weight: bold; }';
@@ -449,7 +448,6 @@ class ActionsFixedprice
 		$out .= '</table>';
 		$out .= '</div>'; // div-table-responsive
 
-		$out .= '</div>'; // fichehalfleft
 		$out .= '</div>'; // fichecenter
 		$out .= '<div class="clearboth"></div>';
 
