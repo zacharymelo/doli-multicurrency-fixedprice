@@ -175,31 +175,21 @@ class ActionsFixedprice
 	 */
 	private function _doActionsAddline(&$object, &$action)
 	{
-		global $conf, $langs, $db;
+		global $conf, $langs;
 
 		if (!is_object($object) || empty($object->multicurrency_code)) {
 			return;
 		}
-
-		// Only act when document is in a non-base currency
 		if ($object->multicurrency_code == $conf->currency) {
 			return;
 		}
-
 		$idprod = GETPOSTINT('idprod');
 		if (empty($idprod) || $idprod <= 0) {
 			return;
 		}
 
-		// Don't override if user manually entered a multicurrency price
-		$multicurrency_post = GETPOST('multicurrency_price_ht', 'alpha');
-		if ($multicurrency_post !== '' && $multicurrency_post !== null && $multicurrency_post !== false) {
-			return;
-		}
-
-		// Look up fixed price for this product + currency — inline query to avoid include issues
-		$sql = "SELECT fixed_price_ht, fixed_price_ttc, price_base_type";
-		$sql .= " FROM ".MAIN_DB_PREFIX."product_fixed_price";
+		// Query for a fixed price
+		$sql = "SELECT fixed_price_ht FROM ".MAIN_DB_PREFIX."product_fixed_price";
 		$sql .= " WHERE fk_product = ".((int) $idprod);
 		$sql .= " AND multicurrency_code = '".$this->db->escape($object->multicurrency_code)."'";
 		$sql .= " AND enabled = 1";
@@ -215,15 +205,12 @@ class ActionsFixedprice
 
 		// Inject the fixed price into POST so standard Dolibarr processing uses it
 		$_POST['multicurrency_price_ht'] = (string) $fixed_price;
-
-		// Clear base currency price so Dolibarr's priority logic picks up the multicurrency price
 		$_POST['price_ht'] = '';
 
-		// Fire divergence warning if enabled
+		// Divergence warning — all inline, no includes
 		if (getDolGlobalString('FIXEDPRICE_WARN_ON_APPLY')) {
 			$langs->load('fixedprice@fixedprice');
 
-			// Get auto-converted price and product ref via direct SQL
 			$sql2 = "SELECT p.ref, p.price FROM ".MAIN_DB_PREFIX."product p WHERE p.rowid = ".((int) $idprod);
 			$resql2 = $this->db->query($sql2);
 			if ($resql2 && $this->db->num_rows($resql2) > 0) {
