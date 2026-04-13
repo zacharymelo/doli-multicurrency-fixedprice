@@ -269,7 +269,8 @@ class ActionsFixedprice
 			return 0;
 		}
 
-		if (!$user->hasRight('fixedprice', 'read')) {
+		// View access follows product permissions — if you can see the price page, you can see fixed prices
+		if (!$user->hasRight('produit', 'lire') && !$user->hasRight('service', 'lire')) {
 			return 0;
 		}
 

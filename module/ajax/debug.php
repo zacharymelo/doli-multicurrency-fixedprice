@@ -99,17 +99,22 @@ if ($mode === 'overview' || $run_all) {
 	// Hook registration
 	print "\n--- HOOK CONTEXTS ---\n";
 	if (isset($conf->modules_parts['hooks'])) {
-		foreach ($conf->modules_parts['hooks'] as $context => $modules) {
-			if (is_array($modules)) {
-				foreach ($modules as $mod) {
-					if (stripos($mod, $MODULE_NAME) !== false) {
-						print "  context='$context' module='$mod'\n";
-					}
+		// Structure is module => [contexts], not context => [modules]
+		if (isset($conf->modules_parts['hooks'][$MODULE_NAME])) {
+			$hooks = $conf->modules_parts['hooks'][$MODULE_NAME];
+			if (is_array($hooks)) {
+				foreach ($hooks as $ctx) {
+					print "  context='$ctx' module='$MODULE_NAME'\n";
 				}
-			} elseif (stripos($modules, $MODULE_NAME) !== false) {
-				print "  context='$context' module='$modules'\n";
+			} else {
+				print "  contexts='$hooks' module='$MODULE_NAME'\n";
 			}
+		} else {
+			print "  (module '$MODULE_NAME' NOT found in modules_parts['hooks'])\n";
+			print "  Registered modules: ".implode(', ', array_keys($conf->modules_parts['hooks']))."\n";
 		}
+	} else {
+		print "  (modules_parts['hooks'] not set)\n";
 	}
 
 	print "\n";
@@ -274,16 +279,18 @@ if ($mode === 'hooks' || $run_all) {
 
 	print "  Hook contexts from conf->modules_parts['hooks']:\n";
 	if (isset($conf->modules_parts['hooks'])) {
-		foreach ($conf->modules_parts['hooks'] as $context => $modules) {
-			if (is_array($modules)) {
-				foreach ($modules as $mod) {
-					if (stripos($mod, $MODULE_NAME) !== false) {
-						print "    context='$context' module='$mod'\n";
-					}
+		if (isset($conf->modules_parts['hooks'][$MODULE_NAME])) {
+			$hooks = $conf->modules_parts['hooks'][$MODULE_NAME];
+			if (is_array($hooks)) {
+				foreach ($hooks as $ctx) {
+					print "    context='$ctx' module='$MODULE_NAME'\n";
 				}
-			} elseif (stripos($modules, $MODULE_NAME) !== false) {
-				print "    context='$context' module='$modules'\n";
+			} else {
+				print "    contexts='$hooks' module='$MODULE_NAME'\n";
 			}
+		} else {
+			print "    (module '$MODULE_NAME' NOT found in modules_parts['hooks'])\n";
+			print "    Registered modules: ".implode(', ', array_keys($conf->modules_parts['hooks']))."\n";
 		}
 	}
 
