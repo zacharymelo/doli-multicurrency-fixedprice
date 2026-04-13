@@ -77,7 +77,8 @@ class ActionsFixedprice
 				|| in_array('ordercard', $currentcontext)
 				|| in_array('propalcard', $currentcontext))
 		) {
-			$this->_doActionsAddline($object, $action);
+			$is_ordercard = in_array('ordercard', $currentcontext);
+			$this->_doActionsAddline($object, $action, $is_ordercard);
 		}
 
 		return 0;
@@ -173,9 +174,9 @@ class ActionsFixedprice
 	 * @param  string $action Current action
 	 * @return void
 	 */
-	private function _doActionsAddline(&$object, &$action)
+	private function _doActionsAddline(&$object, &$action, $is_ordercard = false)
 	{
-		global $conf, $langs;
+		global $conf;
 
 		if (!is_object($object) || empty($object->multicurrency_code)) {
 			return;
@@ -203,11 +204,24 @@ class ActionsFixedprice
 		$obj = $this->db->fetch_object($resql);
 		$fixed_price = (float) $obj->fixed_price_ht;
 
-		// Inject the fixed price into POST so standard Dolibarr processing uses it
-		$_POST['multicurrency_price_ht'] = (string) $fixed_price;
-		$_POST['price_ht'] = '';
+		if ($is_ordercard) {
+			// Order card does NOT have a $price_ht_devise branch in its price
+			// priority logic for products — back-calculate the base currency price
+			// from the fixed multicurrency price using the document's exchange rate
+			$rate = (float) $object->multicurrency_tx;
+			if (empty($rate) || $rate == 0) {
+				$rate = 1;
+			}
+			$base_price = $fixed_price / $rate;
+			$_POST['price_ht'] = (string) price2num($base_price, 'MU');
+		} else {
+			// Invoice and proposal cards have a $price_ht_devise branch that
+			// picks up multicurrency_price_ht directly
+			$_POST['multicurrency_price_ht'] = (string) $fixed_price;
+			$_POST['price_ht'] = '';
+		}
 
-		dol_syslog('fixedprice: injected fixed price '.$fixed_price.' '.$object->multicurrency_code.' for product '.$idprod, LOG_INFO);
+		dol_syslog('fixedprice: injected fixed price '.$fixed_price.' '.$object->multicurrency_code.' for product '.$idprod.($is_ordercard ? ' (order: base_ht='.$_POST['price_ht'].')' : ''), LOG_INFO);
 	}
 
 	/**
