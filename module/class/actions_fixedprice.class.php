@@ -176,7 +176,7 @@ class ActionsFixedprice
 	 */
 	private function _doActionsAddline(&$object, &$action, $is_ordercard = false)
 	{
-		global $conf;
+		global $conf, $langs;
 
 		if (!is_object($object) || empty($object->multicurrency_code)) {
 			return;
