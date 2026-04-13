@@ -72,9 +72,10 @@ class ActionsFixedprice
 		}
 
 		// --- Invoice/Order/Proposal: intercept addline ---
-		if (in_array('invoicecard', $currentcontext)
-			|| in_array('ordercard', $currentcontext)
-			|| in_array('propalcard', $currentcontext)
+		if ($action == 'addline'
+			&& (in_array('invoicecard', $currentcontext)
+				|| in_array('ordercard', $currentcontext)
+				|| in_array('propalcard', $currentcontext))
 		) {
 			$this->_doActionsAddline($object, $action);
 		}
@@ -174,23 +175,19 @@ class ActionsFixedprice
 	 */
 	private function _doActionsAddline(&$object, &$action)
 	{
-		global $conf, $langs;
+		global $conf, $langs, $db;
 
-		if ($action != 'addline') {
+		if (!is_object($object) || empty($object->multicurrency_code)) {
 			return;
 		}
 
-		if (!is_object($object) || !property_exists($object, 'multicurrency_code')) {
+		// Only act when document is in a non-base currency
+		if ($object->multicurrency_code == $conf->currency) {
 			return;
 		}
 
 		$idprod = GETPOSTINT('idprod');
 		if (empty($idprod) || $idprod <= 0) {
-			return;
-		}
-
-		// Only act when document is in a non-base currency
-		if (empty($object->multicurrency_code) || $object->multicurrency_code == $conf->currency) {
 			return;
 		}
 
@@ -200,15 +197,21 @@ class ActionsFixedprice
 			return;
 		}
 
-		// Look up fixed price for this product + currency
-		dol_include_once('/fixedprice/lib/fixedprice.lib.php');
+		// Look up fixed price for this product + currency — inline query to avoid include issues
+		$sql = "SELECT fixed_price_ht, fixed_price_ttc, price_base_type";
+		$sql .= " FROM ".MAIN_DB_PREFIX."product_fixed_price";
+		$sql .= " WHERE fk_product = ".((int) $idprod);
+		$sql .= " AND multicurrency_code = '".$this->db->escape($object->multicurrency_code)."'";
+		$sql .= " AND enabled = 1";
+		$sql .= " AND entity = ".((int) $conf->entity);
 
-		$fixed = fixedpriceFetchEnabled($this->db, $idprod, $object->multicurrency_code);
-		if ($fixed === null) {
+		$resql = $this->db->query($sql);
+		if (!$resql || $this->db->num_rows($resql) == 0) {
 			return;
 		}
 
-		$fixed_price = (float) $fixed['fixed_price_ht'];
+		$obj = $this->db->fetch_object($resql);
+		$fixed_price = (float) $obj->fixed_price_ht;
 
 		// Inject the fixed price into POST so standard Dolibarr processing uses it
 		$_POST['multicurrency_price_ht'] = (string) $fixed_price;
@@ -220,27 +223,42 @@ class ActionsFixedprice
 		if (getDolGlobalString('FIXEDPRICE_WARN_ON_APPLY')) {
 			$langs->load('fixedprice@fixedprice');
 
-			$auto_price = fixedpriceGetAutoPrice($this->db, $idprod, $object->multicurrency_code);
-			$divergence = fixedpriceCalcDivergence($fixed_price, $auto_price);
-			$threshold = fixedpriceResolveThreshold($this->db, $idprod, $object->multicurrency_code);
+			// Get auto-converted price and product ref via direct SQL
+			$sql2 = "SELECT p.ref, p.price FROM ".MAIN_DB_PREFIX."product p WHERE p.rowid = ".((int) $idprod);
+			$resql2 = $this->db->query($sql2);
+			if ($resql2 && $this->db->num_rows($resql2) > 0) {
+				$prodobj = $this->db->fetch_object($resql2);
 
-			require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
-			$prod = new Product($this->db);
-			$prod->fetch($idprod);
+				$sql3 = "SELECT rate FROM ".MAIN_DB_PREFIX."multicurrency_rate mcr";
+				$sql3 .= " JOIN ".MAIN_DB_PREFIX."multicurrency mc ON mc.rowid = mcr.fk_multicurrency";
+				$sql3 .= " WHERE mc.code = '".$this->db->escape($object->multicurrency_code)."'";
+				$sql3 .= " AND mc.entity = ".((int) $conf->entity);
+				$sql3 .= " ORDER BY mcr.date_sync DESC LIMIT 1";
+				$resql3 = $this->db->query($sql3);
+				$rate = 1;
+				if ($resql3 && $this->db->num_rows($resql3) > 0) {
+					$rateobj = $this->db->fetch_object($resql3);
+					$rate = (float) $rateobj->rate;
+				}
 
-			$msg = $langs->trans(
-				"FixedPriceApplied",
-				$prod->ref,
-				$object->multicurrency_code,
-				price($fixed_price, 0, $langs, 1, -1, -1, $object->multicurrency_code),
-				price2num($divergence, 1),
-				price($auto_price, 0, $langs, 1, -1, -1, $object->multicurrency_code)
-			);
+				$auto_price = (float) $prodobj->price * $rate;
+				$divergence = ($auto_price > 0) ? abs(($fixed_price - $auto_price) / $auto_price) * 100 : 0;
 
-			if ($divergence > $threshold) {
-				setEventMessages($msg, null, 'warnings');
-			} else {
-				setEventMessages($msg, null, 'mesgs');
+				$msg = $langs->trans(
+					"FixedPriceApplied",
+					$prodobj->ref,
+					$object->multicurrency_code,
+					price($fixed_price, 0, $langs, 1, -1, -1, $object->multicurrency_code),
+					price2num($divergence, 1),
+					price($auto_price, 0, $langs, 1, -1, -1, $object->multicurrency_code)
+				);
+
+				$threshold = (float) getDolGlobalString('FIXEDPRICE_DIVERGENCE_THRESHOLD', '10');
+				if ($divergence > $threshold) {
+					setEventMessages($msg, null, 'warnings');
+				} else {
+					setEventMessages($msg, null, 'mesgs');
+				}
 			}
 		}
 	}
