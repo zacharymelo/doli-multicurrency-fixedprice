@@ -13,8 +13,6 @@
  * \brief   Hook actions for the Fixed Multicurrency Price module
  */
 
-require_once DOL_DOCUMENT_ROOT.'/multicurrency/class/multicurrency.class.php';
-
 /**
  * Class ActionsFixedprice
  *
@@ -78,7 +76,11 @@ class ActionsFixedprice
 			|| in_array('ordercard', $currentcontext)
 			|| in_array('propalcard', $currentcontext)
 		) {
-			$this->_doActionsAddline($object, $action);
+			try {
+				$this->_doActionsAddline($object, $action);
+			} catch (Exception $e) {
+				dol_syslog('fixedprice::doActions addline error: '.$e->getMessage(), LOG_ERR);
+			}
 		}
 
 		return 0;
@@ -179,6 +181,11 @@ class ActionsFixedprice
 		global $conf, $langs;
 
 		if ($action != 'addline') {
+			return;
+		}
+
+		// Safety: ensure object has multicurrency_code property
+		if (!is_object($object) || !property_exists($object, 'multicurrency_code')) {
 			return;
 		}
 
