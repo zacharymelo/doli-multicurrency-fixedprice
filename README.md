@@ -123,16 +123,6 @@ The module uses only Dolibarr's hook system -- no core files are modified. It si
 
 ## Development
 
-### Local Development with Docker
-
-```bash
-cd fixedprice
-docker compose up -d
-# Open http://localhost:8080
-# Login: admin / admin
-# Enable the module in Home > Setup > Modules
-```
-
 ### Debug Endpoint
 
 With debug mode enabled, visit:
