@@ -1,0 +1,41 @@
+# Copyright (C) 2026 DPG Supply
+#
+# Fixed Multicurrency Price module language file
+
+# Module
+Module510001Name = Fixed Multicurrency Prices
+Module510001Desc = Set fixed per-currency selling prices on products that override automatic exchange-rate conversion
+
+# Admin
+FixedpriceSetup = Fixed Price Settings
+FixedpriceDivergenceThreshold = Default divergence threshold (%)
+FixedpriceDivergenceThresholdHelp = Products with fixed prices that diverge more than this percentage from the auto-converted price will trigger warnings. Can be overridden per product.
+FixedpriceWarnOnApply = Show warnings when fixed prices are applied
+FixedpriceWarnOnApplyHelp = Display a per-line notification on invoices, orders, and proposals when a fixed multicurrency price overrides the automatic conversion
+
+# Product price page
+FixedMulticurrencyPrices = Fixed Multicurrency Prices
+FixedPriceHT = Fixed Price (excl. tax)
+FixedPriceTTC = Fixed Price (incl. tax)
+AutoConvertedPrice = Auto-Converted Price
+Divergence = Divergence
+DivergenceThreshold = Threshold
+Enabled = Enabled
+FixedPriceSaved = Fixed price saved successfully
+FixedPriceDeleted = Fixed price removed
+FixedPriceToggled = Fixed price toggled
+NoFixedPricesYet = No fixed prices set. Add a fixed price for a currency below.
+AddFixedPrice = Add Fixed Price
+PerProductThreshold = Per-product threshold (%)
+PerProductThresholdHelp = Leave blank to inherit from parent product or global default
+InheritedFromParent = inherited from parent
+InheritedFromGlobal = global default
+
+# Document line warnings
+FixedPriceApplied = Product %s: Fixed %s price %s applied (%s%% divergence from auto-converted %s)
+FixedPriceDivergenceWarning = Product %s: Fixed %s price diverges %s%% from auto-converted price (threshold: %s%%)
+
+# Dashboard widget
+BoxFixedpriceDivergence = Fixed Price Divergence Alerts
+BoxFixedpriceDivergenceDesc = Products whose fixed multicurrency prices have diverged beyond their threshold
+NoDivergenceAlerts = All fixed prices are within their divergence thresholds
