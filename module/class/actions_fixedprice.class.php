@@ -278,14 +278,14 @@ class ActionsFixedprice
 		dol_include_once('/fixedprice/class/fixedprice.class.php');
 		dol_include_once('/fixedprice/lib/fixedprice.lib.php');
 
-		// Close tabsAction div, output our section, reopen tabsAction
-		$out = '</div>'; // close tabsAction
+		// Print directly — addMoreActionsButtons callers don't output $hookmanager->resPrint
+		// Close tabsAction div, output our section, reopen tabsAction for default buttons
+		print '</div>'; // close tabsAction
 
-		$out .= $this->_renderFixedPricesSection($object);
+		print $this->_renderFixedPricesSection($object);
 
-		$out .= '<div class="tabsAction">'; // reopen for default buttons
+		print '<div class="tabsAction">'; // reopen for default buttons
 
-		$this->resprints = $out;
 		return 0;
 	}
 
