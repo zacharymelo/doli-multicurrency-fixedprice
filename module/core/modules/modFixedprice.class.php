@@ -40,7 +40,7 @@ class modFixedprice extends DolibarrModules
 
 		$this->name = preg_replace('/^mod/i', '', get_class($this));
 		$this->description = "Fixed multicurrency selling prices per product, overriding automatic exchange-rate conversion";
-		$this->version = '1.1.1';
+		$this->version = '1.1.2';
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		$this->picto = 'multicurrency';
 
@@ -125,6 +125,7 @@ class modFixedprice extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=products',
 			'type' => 'left',
 			'titre' => 'FixedPriceList',
+			'prefix' => img_picto('', 'multicurrency', 'class="paddingright pictofixedwidth"'),
 			'mainmenu' => 'products',
 			'leftmenu' => 'fixedprice_list',
 			'url' => '/fixedprice/fixedprice_list.php',
