@@ -31,6 +31,15 @@ This module adds a **fixed price override** per currency on each product. When a
 - **Sales Orders**: back-calculates the base currency price from the fixed price (Dolibarr's order card handles multicurrency differently)
 - Products without a fixed price use normal auto-conversion (no interference)
 - Documents in the base currency are never affected
+- **Divergence alerts**: red error banner when a fixed price exceeds the divergence threshold, green info when within threshold -- shown per line when adding products
+
+### List View (Products > Fixed Prices)
+- Pivoted layout: one row per product, one column group per active currency (CAD, EUR, etc.)
+- Shows fixed price, auto-converted price, and divergence % side by side
+- Inline editing: click the pencil to edit all currencies for a product in one row
+- Toggle switches to enable/disable each currency's override
+- Sortable and filterable by product ref and label
+- Tooltips throughout explaining each column and showing current exchange rates
 
 ### Dashboard Widget
 - "Fixed Price Divergence Alerts" box for the home dashboard
