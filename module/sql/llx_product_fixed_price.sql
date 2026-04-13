@@ -18,5 +18,6 @@ CREATE TABLE llx_product_fixed_price (
 	tms                TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	fk_user_author     INTEGER,
 	fk_user_modif      INTEGER,
-	entity             INTEGER       NOT NULL DEFAULT 1
+	entity             INTEGER       NOT NULL DEFAULT 1,
+	import_key         VARCHAR(14)
 ) ENGINE=innodb;

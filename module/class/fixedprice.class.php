@@ -232,11 +232,14 @@ class FixedPrice
 		$sql .= ", fk_user_modif = ".((int) $this->fk_user_modif);
 		$sql .= " WHERE rowid = ".((int) $this->id);
 
+		$this->db->begin();
 		$resql = $this->db->query($sql);
 		if (!$resql) {
 			$this->error = $this->db->lasterror();
+			$this->db->rollback();
 			return -1;
 		}
+		$this->db->commit();
 		return 1;
 	}
 
@@ -256,11 +259,14 @@ class FixedPrice
 		$sql .= ", fk_user_modif = ".((int) $this->fk_user_modif);
 		$sql .= " WHERE rowid = ".((int) $this->id);
 
+		$this->db->begin();
 		$resql = $this->db->query($sql);
 		if (!$resql) {
 			$this->error = $this->db->lasterror();
+			$this->db->rollback();
 			return -1;
 		}
+		$this->db->commit();
 		return 1;
 	}
 
@@ -275,11 +281,14 @@ class FixedPrice
 		$sql = "DELETE FROM ".MAIN_DB_PREFIX."product_fixed_price";
 		$sql .= " WHERE rowid = ".((int) $this->id);
 
+		$this->db->begin();
 		$resql = $this->db->query($sql);
 		if (!$resql) {
 			$this->error = $this->db->lasterror();
+			$this->db->rollback();
 			return -1;
 		}
+		$this->db->commit();
 		return 1;
 	}
 

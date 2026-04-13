@@ -39,3 +39,7 @@ FixedPriceDivergenceWarning = Product %s: Fixed %s price diverges %s%% from auto
 BoxFixedpriceDivergence = Fixed Price Divergence Alerts
 BoxFixedpriceDivergenceDesc = Products whose fixed multicurrency prices have diverged beyond their threshold
 NoDivergenceAlerts = All fixed prices are within their divergence thresholds
+
+# Debug
+DebugMode = Debug Mode
+DebugModeDesc = When enabled, exposes a diagnostic endpoint at /custom/fixedprice/ajax/debug.php for troubleshooting fixed price configuration and divergence calculations.

@@ -136,6 +136,9 @@ class modFixedprice extends DolibarrModules
 		if ($result < 0) {
 			return -1;
 		}
+
+		$this->delete_menus();
+
 		return $this->_init(array(), $options);
 	}
 

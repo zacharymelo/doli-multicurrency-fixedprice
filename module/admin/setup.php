@@ -101,6 +101,16 @@ print $form->selectyesno('FIXEDPRICE_WARN_ON_APPLY', getDolGlobalString('FIXEDPR
 print '</td>';
 print '</tr>';
 
+// Debug mode
+print '<tr class="oddeven">';
+print '<td>'.$langs->trans("DebugMode");
+print ' '.$form->textwithpicto('', $langs->trans("DebugModeDesc"));
+print '</td>';
+print '<td>';
+print ajax_constantonoff('FIXEDPRICE_DEBUG_MODE');
+print '</td>';
+print '</tr>';
+
 print '</table>';
 
 print '<div class="center">';
