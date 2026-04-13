@@ -382,7 +382,7 @@ while ($i < $num) {
 				if ($permwrite) {
 					$toggle_title = dol_escape_htmltag($fp->enabled ? $langs->trans('ClickToDisable', $code) : $langs->trans('ClickToEnable', $code));
 					print '<a href="'.$_SERVER['PHP_SELF'].'?action=togglefixedprice&token='.newToken().'&lineid='.$fp->id.$param.'" title="'.$toggle_title.'" style="display:inline-block;margin-right:10px">';
-					print img_picto('', $fp->enabled ? 'switch_on' : 'switch_off', 'class="valignmiddle" style="width:20px"');
+					print img_picto('', $fp->enabled ? 'switch_on' : 'switch_off', 'class="valignmiddle" style="width:30px"');
 					print '</a>';
 				}
 				if (!$fp->enabled) {
