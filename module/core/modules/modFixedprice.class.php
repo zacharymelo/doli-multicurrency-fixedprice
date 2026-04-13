@@ -40,7 +40,7 @@ class modFixedprice extends DolibarrModules
 
 		$this->name = preg_replace('/^mod/i', '', get_class($this));
 		$this->description = "Fixed multicurrency selling prices per product, overriding automatic exchange-rate conversion";
-		$this->version = '1.1.3';
+		$this->version = '1.1.4';
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		$this->picto = 'multicurrency';
 

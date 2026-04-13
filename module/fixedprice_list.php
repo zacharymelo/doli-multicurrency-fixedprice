@@ -291,14 +291,13 @@ foreach ($currencies as $code => $name) {
 	print '<td class="liste_titre"></td>';
 	print '<td class="liste_titre"></td>';
 }
-print '<td class="liste_titre center nowraponall">';
-print '<button type="submit" name="button_search" class="liste_titre button_search reposition" title="'.$langs->trans('Search').'">'.img_picto($langs->trans('Search'), 'search.png', '', 0, 1).'</button>';
-print '<button type="submit" name="button_removefilter" class="liste_titre button_removefilter reposition" title="'.$langs->trans('RemoveFilter').'">'.img_picto($langs->trans('RemoveFilter'), 'searchclear.png', '', 0, 1).'</button>';
+print '<td class="liste_titre center maxwidthsearch">';
+print $form->showFilterButtons();
 print '</td>';
 print '</tr>';
 
 // Handle search clear
-if (GETPOST('button_removefilter_x') || GETPOST('button_removefilter')) {
+if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) {
 	$search_ref = '';
 	$search_label = '';
 }
