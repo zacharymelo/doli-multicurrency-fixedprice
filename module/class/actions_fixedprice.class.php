@@ -99,7 +99,7 @@ class ActionsFixedprice
 		dol_include_once('/fixedprice/class/fixedprice.class.php');
 		$langs->load('fixedprice@fixedprice');
 
-		if ($action == 'savefixedprice' && $user->hasRight('fixedprice', 'write')) {
+		if ($action == 'savefixedprice' && ($user->hasRight('produit', 'creer') || $user->hasRight('service', 'creer'))) {
 			$currency_code = GETPOST('fixedprice_currency', 'alpha');
 			$price_ht = price2num(GETPOST('fixedprice_ht', 'alpha'));
 			$threshold = GETPOST('fixedprice_threshold', 'alpha');
@@ -134,7 +134,7 @@ class ActionsFixedprice
 			$action = '';
 		}
 
-		if ($action == 'togglefixedprice' && $user->hasRight('fixedprice', 'write')) {
+		if ($action == 'togglefixedprice' && ($user->hasRight('produit', 'creer') || $user->hasRight('service', 'creer'))) {
 			$lineid = GETPOSTINT('lineid');
 			$fp = new FixedPrice($this->db);
 			if ($fp->fetch($lineid) > 0) {
@@ -148,7 +148,7 @@ class ActionsFixedprice
 			$action = '';
 		}
 
-		if ($action == 'deletefixedprice' && $user->hasRight('fixedprice', 'delete')) {
+		if ($action == 'deletefixedprice' && ($user->hasRight('produit', 'creer') || $user->hasRight('service', 'creer'))) {
 			$lineid = GETPOSTINT('lineid');
 			$fp = new FixedPrice($this->db);
 			if ($fp->fetch($lineid) > 0) {
@@ -411,7 +411,7 @@ class ActionsFixedprice
 
 				// Delete
 				$out .= '<td class="right">';
-				if ($user->hasRight('fixedprice', 'delete')) {
+				if (($user->hasRight('produit', 'creer') || $user->hasRight('service', 'creer'))) {
 					$out .= '<a href="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'&action=deletefixedprice&token='.newToken().'&lineid='.$fp->id.'">';
 					$out .= img_delete();
 					$out .= '</a>';
@@ -425,7 +425,7 @@ class ActionsFixedprice
 				$out .= '<td><strong>'.$code.'</strong> ('.$label.')</td>';
 
 				$out .= '<td class="right">';
-				if ($user->hasRight('fixedprice', 'write')) {
+				if (($user->hasRight('produit', 'creer') || $user->hasRight('service', 'creer'))) {
 					$out .= '<form method="POST" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'" style="display:inline">';
 					$out .= '<input type="hidden" name="token" value="'.newToken().'">';
 					$out .= '<input type="hidden" name="action" value="savefixedprice">';
