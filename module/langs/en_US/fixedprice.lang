@@ -20,7 +20,6 @@ FixedPriceTTC = Fixed Price (incl. tax)
 AutoConvertedPrice = Auto-Converted Price
 Divergence = Divergence
 DivergenceThreshold = Threshold
-Enabled = Enabled
 FixedPriceSaved = Fixed price saved successfully
 FixedPriceDeleted = Fixed price removed
 FixedPriceToggled = Fixed price toggled
@@ -50,8 +49,6 @@ Fixed = Fixed
 Auto = Auto
 ClickToDisable = Click to pause the %s fixed price override
 ClickToEnable = Click to enable the %s fixed price override
-Disable = Disable
-Enable = Enable
 
 # Dashboard widget
 BoxFixedpriceDivergence = Fixed Price Divergence Alerts
